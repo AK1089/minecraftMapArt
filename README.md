@@ -8,7 +8,7 @@ Requirements
 ------------
 
 - [Python >= 3.7](https://www.python.org/downloads/)
-- [PIL](https://pypi.org/project/Pillow/)
+- [PIL / Pillow](https://pypi.org/project/Pillow/)
 
 
 Installation
