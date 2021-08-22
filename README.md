@@ -17,8 +17,6 @@ Usage
 -----
 
 ```python
-from 
-
 createCommand('cat.png') # -> cat.txt
 createCommand('map_logo') # -> map_logo.txt
 createCommand('blue_ocean') # -> blue_ocean.txt
@@ -32,4 +30,4 @@ If you know the primary background block of your map art, specify it as an OPTIO
 argument, and your script will run slightly faster. For most cases, adding this is entirely
 unnecessary.
 
-Your script will be saved in the same directory as a text file named after your imagel=.
+Your script will be saved in the same directory as a text file named after your image.
