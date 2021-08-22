@@ -88,9 +88,9 @@ def closestMatch(rgb):
     return currentClosest
 
 # starting coordinates for generating setblock commands
-startX = -2368
-startY = 85
-startZ = -1216 
+startX = -3392
+startY = 140
+startZ = -1600 
 
 
 # takes in the name of a 128x128 PNG file and makes a text file with the commands
@@ -111,7 +111,7 @@ def createCommand(filename, baseBlock='white_concrete'):
         filename = filename.replace('.png', '')
 
     # start commands to reset the canvas and remove the script
-    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n'
+    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544'
     
     # loads RGB data from the image
     try:
