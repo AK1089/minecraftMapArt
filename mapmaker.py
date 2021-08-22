@@ -1,4 +1,4 @@
-# Image sequencing library used to geet RGB data from input pictures
+# Image sequencing library used to get RGB data from input pictures
 from PIL import Image
 
 # blocks and their respective RGB values on a map
