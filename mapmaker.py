@@ -95,26 +95,30 @@ startZ = -1216
 
 # takes in the name of a 128x128 PNG file and makes a text file with the commands
 # to generate a map displaying the image
-def createCommand(name, baseBlock='white_concrete'):
+def createCommand(filename, baseBlock='white_concrete'):
+
+    # deals with invalid base blocks
+    if f' {baseBlock}\n' not in data:
+        baseBlock = 'white_concrete'
 
     # parsing filename - only PNGs allowed!
-    name = name.lower()
-    if '.' in name and '.png' not in name:
+    filename = filename.lower()
+    if '.' in filename and '.png' not in filename:
         return 'Invalid file extension. Please use PNG files only.'
 
     # strips png extensions from filename if applicable
-    elif '.png' in name:
-        name = name.replace('.png', '')
+    elif '.png' in filename:
+        filename = filename.replace('.png', '')
 
     # start commands to reset the canvas and remove the script
     command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n'
     
     # loads RGB data from the image
     try:
-        im = Image.open(f"{name}.png")
+        im = Image.open(f"{filename}.png")
         pix = im.load()
     except FileNotFoundError:
-        return f'Unable to find file {name}.png - make sure it is in the same directory as this program.'
+        return f'Unable to find file {filename}.png - make sure it is in the same directory as this program.'
 
     return pix
 
@@ -173,11 +177,7 @@ def createCommand(name, baseBlock='white_concrete'):
         command = command + clinetext
     
     # write the command text to a text file named after the image
-    f = open(f'{name}.txt', 'w+')
-    f.write(command)
-    return f'Successfully saved script for map art at {name}.txt'
-
-# makes it easy to use the program
-if __name__ == '__main__':
-    while True:
-        createCommand(input('Enter your filename: '))
+    with open(f'{filename}.txt', 'w+') as f:
+        f.write(command)
+    
+    return f'Successfully saved script for map art at {filename}.txt'
