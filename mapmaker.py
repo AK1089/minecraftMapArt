@@ -1,5 +1,7 @@
 # Image sequencing library used to get RGB data from input pictures
 from PIL import Image
+# to open paste.minr.org for you
+from webbrowser import open as openSite
 
 # blocks and their respective RGB values on a map
 data = '''127 178 56 grass_block
@@ -111,14 +113,16 @@ def createCommand(filename, baseBlock='white_concrete'):
         filename = filename.replace('.png', '')
 
     # start commands to reset the canvas and remove the script
-    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544'
+    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544 Zero_the_end\n'
+    command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" FILENAMEHERE.png ","color":"blue"},{"text":"now - should take less than a minute.","color":"dark_green"}]\n'
+    command = command.replace('FILENAMEHERE', filename)
     
     # loads RGB data from the image
     try:
         im = Image.open(f"{filename}.png")
         pix = im.load()
     except FileNotFoundError:
-        return f'Unable to find file {filename}.png - make sure it is in the same directory as this program.'
+        return f'Unable to find {filename}.png - make sure it is in the same directory as this program.'
 
     # iterates through each pixel of the image in natural order (L-R, T-B)
     for zl in range(128):
@@ -177,5 +181,12 @@ def createCommand(filename, baseBlock='white_concrete'):
     # write the command text to a text file named after the image
     with open(f'{filename}.txt', 'w+') as f:
         f.write(command)
-    
+
+    # opens website and displays success message
+    openSite('https://paste.minr.org/')
     return f'Successfully saved script for map art at {filename}.txt'
+
+# easy, convenient main loop
+if __name__ == '__main__':
+    while True:
+        print(createCommand(input('Enter your image filename here -> ')), '\n')
