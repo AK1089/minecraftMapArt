@@ -120,8 +120,6 @@ def createCommand(filename, baseBlock='white_concrete'):
     except FileNotFoundError:
         return f'Unable to find file {filename}.png - make sure it is in the same directory as this program.'
 
-    return pix
-
     # iterates through each pixel of the image in natural order (L-R, T-B)
     for zl in range(128):
 
