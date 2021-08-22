@@ -16,8 +16,8 @@ Installation
 Download file as ZIP, extract and run **mapmaker.py**
 
 
-createCommand
--------------
+createCommand(filename, baseBlock='white_concrete')
+---------------------------------------------------
 Takes the name of an image file in PNG form as input. File must be 128x128 pixels in size. If you know the primary background block of your map art, specify it as an OPTIONAL second argument, and your script will run slightly faster. For most cases, adding this is entirely unnecessary.
 
 Your script will be saved in the same directory as a text file named after your image.
