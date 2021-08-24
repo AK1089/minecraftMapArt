@@ -14,6 +14,7 @@ Requirements
 Installation
 ------------
 Download file as ZIP, extract and run **mapmaker.py**
+Make sure the image file you want to convert into a map is in the same directory as the program.
 
 
 createCommand(filename, baseBlock='white_concrete')
@@ -23,8 +24,8 @@ Takes the name of an image file in PNG form as input. File must be 128x128 pixel
 Your script will be saved in the same directory as a text file named after your image.
 
 
-Usage
------
+Example Usage
+-------------
 
 ```python
 createCommand('cat.png') # -> cat.txt
