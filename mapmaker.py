@@ -113,7 +113,7 @@ def createCommand(filename, baseBlock='white_concrete'):
         filename = filename.replace('.png', '')
 
     # start commands to reset the canvas and remove the script
-    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544 Zero_the_end\n'
+    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544 Theta_the_end\n'
     command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" FILENAMEHERE.png ","color":"blue"},{"text":"now - should take less than a minute.","color":"dark_green"}]\n'
     command = command.replace('FILENAMEHERE', filename)
     
