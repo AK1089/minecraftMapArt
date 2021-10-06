@@ -24,12 +24,21 @@ Takes the name of an image file in PNG form as input. File must be 128x128 pixel
 Your script will be uploaded to paste.minr.org and opened in a browser for you.
 
 
-Example Usage
--------------
+Example Usage - Module
+----------------------
 
 ```python
 createCommand('cat.png')
 createCommand('map_logo')
 createCommand('blue_ocean')
 createCommand('blue_ocean', 'blue_wool') # script is shorter and runs faster
+```
+
+
+Running as Standalone File
+--------------------------
+You can also simply run the file, and instead of manually calling the function in the console, enter filenames into the input fields.
+
+```python
+Enter your image filename here ->  # type an image filename here and press return
 ```
