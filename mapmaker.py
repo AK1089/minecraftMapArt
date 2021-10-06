@@ -195,4 +195,4 @@ def createCommand(filename, baseBlock='white_concrete'):
 # easy, convenient main loop
 if __name__ == '__main__':
     while True:
-        createCommand(input('Enter your image filename here -> ')), '\n')
+        createCommand(input('Enter your image filename here -> '))
