@@ -187,7 +187,7 @@ def createCommand(filename, baseBlock='white_concrete'):
     '''
     
     # posts to paste.minr.org
-    req = post('https://paste.minr.org/documents', data=text)
+    req = post('https://paste.minr.org/documents', data=command)
     key = json.loads(req.content)["key"]
 
     # opens website and displays success message
