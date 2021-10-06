@@ -21,15 +21,15 @@ createCommand(filename, baseBlock='white_concrete')
 ---------------------------------------------------
 Takes the name of an image file in PNG form as input. File must be 128x128 pixels in size. If you know the primary background block of your map art, specify it as an OPTIONAL second argument, and your script will run slightly faster. For most cases, adding this is entirely unnecessary.
 
-Your script will be saved in the same directory as a text file named after your image.
+Your script will be uploaded to paste.minr.org and opened in a browser for you.
 
 
 Example Usage
 -------------
 
 ```python
-createCommand('cat.png') # -> cat.txt
-createCommand('map_logo') # -> map_logo.txt
-createCommand('blue_ocean') # -> blue_ocean.txt
-createCommand('blue_ocean', 'blue_wool') # -> blue_ocean.txt (but the script is more optimised)
+createCommand('cat.png')
+createCommand('map_logo')
+createCommand('blue_ocean')
+createCommand('blue_ocean', 'blue_wool') # script is shorter and runs faster
 ```
