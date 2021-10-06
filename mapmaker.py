@@ -4,6 +4,7 @@ from PIL import Image
 from webbrowser import open as openSite
 # to post to paste.minr.org
 from requests import post
+import json
 
 # blocks and their respective RGB values on a map
 data = '''127 178 56 grass_block
