@@ -117,7 +117,7 @@ def createCommand(filename, baseBlock='white_concrete'):
 
     # start commands to reset the canvas and remove the script
     command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544 Theta_the_end\n'
-    command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" FILENAMEHERE.png ","color":"blue"},{"text":"now - should take less than a minute.","color":"dark_green"}]\n'
+    command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" FILENAMEHERE.png ","color":"blue"},{"text":"now - build time TIMEHERE","color":"dark_green"}]\n'
     command = command.replace('FILENAMEHERE', filename)
     
     # loads RGB data from the image
@@ -186,6 +186,12 @@ def createCommand(filename, baseBlock='white_concrete'):
     with open(f'{filename}.txt', 'w+') as f:
         f.write(command)
     '''
+
+    time_seconds = (command.count('\n') // 20 + 1)
+    time_minutes = time_seconds // 60
+    time_seconds = str(time_seconds % 60).zfill(2)
+    
+    command = command.replace('TIMEHERE', f"{time_minutes}:{time_seconds}")
     
     # posts to paste.minr.org
     try:
