@@ -188,11 +188,17 @@ def createCommand(filename, baseBlock='white_concrete'):
     '''
     
     # posts to paste.minr.org
-    req = post('https://paste.minr.org/documents', data=command)
-    key = json.loads(req.content)["key"]
+    try:
+        req = post('https://paste.minr.org/documents', data=command)
+        key = json.loads(req.content)["key"]
 
-    # opens website and displays success message
-    openSite(f'https://paste.minr.org/{key}')
+        # opens website and displays success message
+        openSite(f'https://paste.minr.org/{key}')
+        print(f"Successfully uploaded script! To use it, ask an admin to run the command:\n/s i i -3329 120 -1544 {key}\n")
+    
+    # KeyError: 'key' if script is too long
+    except KeyError:
+        print("Script is too long for hastebin to handle. Please try again with a less detailed image.")
 
 # easy, convenient main loop
 if __name__ == '__main__':
