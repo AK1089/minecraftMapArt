@@ -204,7 +204,7 @@ def createCommand(filename, baseBlock='white_concrete'):
 
         # opens website and displays success message
         openSite(f'https://paste.minr.org/{key}')
-        print(f"Successfully uploaded script! To use it, ask an admin to run the command:\n/s i i Theta_the_end -3329 120 -1544 {key}\n")
+        print(f"Successfully uploaded script! To use it, ask an admin to run the command:\n/s i i -3329 120 -1544 Theta_the_end {key}\n")
     
     # KeyError: 'key' if script is too long
     except KeyError:
