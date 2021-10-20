@@ -7,7 +7,7 @@ A program to generate scripts in Minr Script Code which automatically builds map
 Requirements
 ------------
 
-- [Python >= 3.7](https://www.python.org/downloads/)
+- [Python 3.7+](https://www.python.org/downloads/)
 - [PIL / Pillow](https://pypi.org/project/Pillow/)
 
 
