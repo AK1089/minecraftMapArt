@@ -118,8 +118,8 @@ def createCommand(filename, baseBlock='white_concrete'):
 
     # start commands to reset the canvas and remove the script
     command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544 Theta_the_end\n'
-    command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" FILENAMEHERE.png ","color":"blue"},{"text":"now - build time TIMEHERE","color":"dark_green"}]\n'
-    command = command.replace('FILENAMEHERE', filename)
+    command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" §FILENAMEHERE.png ","color":"blue"},{"text":"now - build time §TIMEHERE","color":"dark_green"}]\n'
+    command = command.replace('§FILENAMEHERE', filename)
     
     # loads RGB data from the image
     try:
@@ -189,11 +189,13 @@ def createCommand(filename, baseBlock='white_concrete'):
         f.write(command)
     '''
 
+    # time calculation based on 20tps: each new line is a new command, which takes 1 tick each
     time_seconds = (command.count('\n') // 20 + 1)
     time_minutes = time_seconds // 60
     time_seconds = str(time_seconds % 60).zfill(2)
     
-    command = command.replace('TIMEHERE', f"{time_minutes}:{time_seconds}")
+    # insert time in correct place
+    command = command.replace('§TIMEHERE', f"{time_minutes}:{time_seconds}")
     
     # posts to paste.minr.org
     try:
@@ -202,7 +204,7 @@ def createCommand(filename, baseBlock='white_concrete'):
 
         # opens website and displays success message
         openSite(f'https://paste.minr.org/{key}')
-        print(f"Successfully uploaded script! To use it, ask an admin to run the command:\n/s i i -3329 120 -1544 {key}\n")
+        print(f"Successfully uploaded script! To use it, ask an admin to run the command:\n/s i i Theta_the_end -3329 120 -1544 {key}\n")
     
     # KeyError: 'key' if script is too long
     except KeyError:
