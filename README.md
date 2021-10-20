@@ -13,7 +13,8 @@ Requirements
 
 Installation
 ------------
-Download file as ZIP, extract and run **mapmaker.py**
+Download file as ZIP, extract and run **mapmaker.py**.
+
 Make sure the image file you want to convert into a map is in the same directory as the program.
 
 
