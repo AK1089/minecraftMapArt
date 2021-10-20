@@ -109,8 +109,9 @@ def createCommand(filename, baseBlock='white_concrete'):
     # parsing filename - only PNGs allowed!
     filename = filename.lower()
     if '.' in filename and '.png' not in filename:
-        return 'Invalid file extension. Please use PNG files only.'
-
+        print('Invalid file extension. Please use PNG files only.')
+        return
+              
     # strips png extensions from filename if applicable
     elif '.png' in filename:
         filename = filename.replace('.png', '')
@@ -125,8 +126,9 @@ def createCommand(filename, baseBlock='white_concrete'):
         im = Image.open(f"{filename}.png")
         pix = im.load()
     except FileNotFoundError:
-        return f'Unable to find {filename}.png - make sure it is in the same directory as this program.'
-
+        print(f'Unable to find {filename}.png - make sure it is in the same directory as this program.')
+        return
+    
     # iterates through each pixel of the image in natural order (L-R, T-B)
     for zl in range(128):
 
@@ -141,7 +143,7 @@ def createCommand(filename, baseBlock='white_concrete'):
             try:
                 match = closestMatch(pix[xl,zl][:3])[0]
             except IndexError:
-                return 'Image too small - your image file must be exactly 128x128 pixels in size'
+                print('Image too small - your image file must be exactly 128x128 pixels in size,')
 
             # add the block to make the colour right to the list
             cline.append(match)
