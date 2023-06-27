@@ -1,216 +1,223 @@
-# Image sequencing library used to get RGB data from input pictures
-from PIL import Image
-# to open paste.minr.org for you
-from webbrowser import open as openSite
+# PIL is an image sequencing library used to get RGB data from input pictures
+from PIL import Image, PyAccess
+
+# numpy performs some useful operations (eg. allowing us to convert RGB to CIE-L*ab)
+# distance from scipy.spatial provides us a way of accessing the vector norm
+import numpy as np
+from scipy.spatial import distance
+
 # to post to paste.minr.org
-from requests import post
+from requests import post, Response
 import json
 
-# blocks and their respective RGB values on a map
-data = '''127 178 56 grass_block
-247 233 163 sand
-255 252 245 diorite
-255 0 0 redstone_block
-199 199 199 cobweb
-0 124 0 big_dripleaf
-160 160 255 packed_ice
-167 167 167 block_of_iron
-255 255 255 white_concrete
-164 168 184 clay
-151 109 77 dirt
-112 112 112 stone
-64 64 225 water
-143 119 72 oak_planks
-216 127 51 acacia_planks
-178 76 216 magenta_wool
-102 153 216 light_blue_wool
-229 229 51 yellow_wool
-127 204 25 lime_wool
-242 127 165 pink_wool
-153 153 153 light_gray_wool
-76 127 153 cyan_wool
-51 76 178 blue_wool
-102 76 51 dark_oak_planks
-102 127 51 green_wool
-153 51 51 red_wool
-25 25 25 black_wool
-250 238 77 block_of_gold
-92 219 213 block_of_diamond
-74 128 255 lapis_block
-0 217 58 block_of_emerald
-129 86 49 podzol
-112 2 0 netherrack
-209 177 161 white_terracotta
-159 82 36 orange_terracotta
-149 87 108 magenta_terracotta
-112 108 138 light_blue_terracotta
-186 133 36 yellow_terracotta
-103 117 53 lime_terracotta
-160 77 78 pink_terracotta
-57 41 35 gray_terracotta
-135 107 98 light_gray_terracotta
-87 92 92 cyan_terracotta
-122 73 88 purple_terracotta
-76 62 92 blue_terracotta
-76 50 35 brown_terracotta
-76 82 42 green_terracotta
-142 60 46 red_terracotta
-37 22 16 black_terracotta
-189 48 49 crimson_nylium
-22 126 134 warped_nylium
-100 100 100 deepslate
-216 175 147 raw_iron_block'''
+# blocks and their respective RGB values as they appear on a map (sourced from the Minecraft wiki)
+colours: dict[str, np.array] = {
+    "grass_block": (127, 178, 56),
+    "sand": (247, 233, 163),
+    "diorite": (255, 252, 245),
+    "redstone_block": (255, 0, 0),
+    "cobweb": (199, 199, 199),
+    "big_dripleaf": (0, 124, 0),
+    "packed_ice": (160, 160, 255),
+    "iron_block": (167, 167, 167),
+    "white_concrete": (255, 255, 255),
+    "clay": (164, 168, 184),
+    "dirt": (151, 109, 77),
+    "stone": (112, 112, 112),
+    "water": (64, 64, 225),
+    "oak_planks": (143, 119, 72),
+    "acacia_planks": (216, 127, 51),
+    "magenta_wool": (178, 76, 216),
+    "light_blue_wool": (102, 153, 216),
+    "yellow_wool": (229, 229, 51),
+    "lime_wool": (127, 204, 25),
+    "pink_wool": (242, 127, 165),
+    "light_gray_wool": (153, 153, 153),
+    "cyan_wool": (76, 127, 153),
+    "blue_wool": (51, 76, 178),
+    "dark_oak_planks": (102, 76, 51),
+    "green_wool": (102, 127, 51),
+    "red_wool": (153, 51, 51),
+    "black_wool": (25, 25, 25),
+    "gold_block": (250, 238, 77),
+    "diamond_block": (92, 219, 213),
+    "lapis_block": (74, 128, 255),
+    "emerald_block": (0, 217, 58),
+    "podzol": (129, 86, 49),
+    "netherrack": (112, 2, 0),
+    "white_terracotta": (209, 177, 161),
+    "orange_terracotta": (159, 82, 36),
+    "magenta_terracotta": (149, 87, 108),
+    "light_blue_terracotta": (112, 108, 138),
+    "yellow_terracotta": (186, 133, 36),
+    "lime_terracotta": (103, 117, 53),
+    "pink_terracotta": (160, 77, 78),
+    "gray_terracotta": (57, 41, 35),
+    "light_gray_terracotta": (135, 107, 98),
+    "cyan_terracotta": (87, 92, 92),
+    "purple_terracotta": (122, 73, 88),
+    "blue_terracotta": (76, 62, 92),
+    "brown_terracotta": (76, 50, 35),
+    "green_terracotta": (76, 82, 42),
+    "red_terracotta": (142, 60, 46),
+    "black_terracotta": (37, 22, 16),
+    "crimson_nylium": (189, 48, 49),
+    "warped_nylium": (22, 126, 134),
+    "deepslate": (100, 100, 100),
+    "raw_iron_block": (216, 175, 147)
+}
 
-# a place for the colour data to be stored in a dictionary
-colours = {}
-
-# converts the raw text in data to a dictionary with namespaced block IDs as keys
-for line in data.split('\n'):
-    r,g,b, block = line.split(' ')
-    colours[block] = (int(r), int(g), int(b))
+# list of all blocks
+blocks: list[str] = list(colours.keys())
 
 
-# a function which gets the squared distance between two points in 3D space
-# defined by RGB vectors, as a pretty good proxy for colour similarity
-def calculateDistance(rgb1, rgb2):
-    return ((rgb1[0] - rgb2[0]) ** 2 + (rgb1[1] - rgb2[1]) ** 2 + (rgb1[2] - rgb2[2]) ** 2)
+# functions to handle some of the respacing from RGB -> XYZ then XYZ -> CIE-L*ab
+# documentation for this conversion / mathematical source can be found at http://www.easyrgb.com/en/math.php
+def respace_to_XYZ(x: np.array) -> np.array:
+    return np.where(x > 0.04045, 100 * ((x + 0.055) / 1.055) ** 2.4, x / 0.1292)
 
-# for an RGB vector, returns the block ID which most closely matches it
-def closestMatch(rgb):
+def respace_from_XYZ(x: np.array) -> np.array:
+    return np.where(x > 0.008856, x ** (1/3), (7.787 * x) + (16 / 116))
 
-    # currentClosest stores the best match so far and its squared distance
-    currentClosest = ('null', 90000)
 
-    # for every colour, evaluate its distance function
-    for c in colours:
-        dist = calculateDistance(colours[c],rgb)
+# function taking in a tuple of 3 integers, (a colour in RGB) and returning a 3-long numpy array (the same colour in CIE-L*ab).
+# this is because (Euclidean) distance in CIE-L*ab more closely correlates to human colour perception than in RGB.
+def convert_to_CIELAB(rgb: tuple) -> np.array:
 
-        # if it is a better match than the current closest, replace current closest
-        if dist < currentClosest[1]:
-            currentClosest = (c, dist)
+    # conversion matrices to be used from respaced RGB to XYZ (M_1), then respaced XYZ to CIE-L*ab (M_2)
+    M_1 = np.array([[0.4124, 0.3576, 0.1805],
+                    [0.2126, 0.7152, 0.0722],
+                    [0.0193, 0.1192, 0.9505]])
 
-    # return final best match having checked all possible colours
-    return currentClosest
+    M_2 = np.array([[   0,  116,    0],
+                    [ 500, -500,    0],
+                    [   0,  200, -200]])
+    
+    # we're converting through XYZ colour space, so this is our halfway point.
+    # normalises the RGB values, respaces that, and uses the first matrix to give us XYZ.
+    # then, divide it by the other normalisation values (D65 illuminant, 2° observer)
+    # to get the right values in XYZ space.
+    XYZ: np.array = np.divide(np.matmul(M_1, respace_to_XYZ(np.array(rgb) / 255)),
+                              np.array((95.047, 100.000, 108.883)))
+    
+    # then, respace this set of values, and multiply it by the second conversion matrix
+    # to get our CIE-L*ab values. note that technically, the L value should be 16 lower,
+    # however as we only ever need the relative values, we can safely omit this.
+    return np.matmul(M_2, respace_from_XYZ(XYZ))
+
+
+# alters the colours array to use the new colour space, so we don't have to constantly
+# recompute the values for every pixel!
+for c in colours:
+    colours[c] = convert_to_CIELAB(colours[c])
+
 
 # starting coordinates for generating setblock commands
-startX = -3392
-startY = 140
-startZ = -1600 
+startX, startY, startZ = (-3392, 140, -1600)
 
 
 # takes in the name of a 128x128 PNG file and makes a text file with the commands
 # to generate a map displaying the image
-def createCommand(filename, baseBlock='white_concrete'):
+def createCommand(filename: str, baseBlock: str = "glass"):
 
-    # deals with invalid base blocks
-    if f' {baseBlock}\n' not in data:
-        baseBlock = 'white_concrete'
-
-    # parsing filename - only PNGs allowed!
+    # deals with invalid base blocks - only the ones in the blocks list are allowed
+    baseBlock = baseBlock if baseBlock in blocks else "glass"
+        
+    # parsing filename - only PNGs are allowed!
     filename = filename.lower()
-    if '.' in filename and '.png' not in filename:
-        print('Invalid file extension. Please use PNG files only.')
-        return
-              
-    # strips png extensions from filename if applicable
-    elif '.png' in filename:
-        filename = filename.replace('.png', '')
+    if "." in filename and ".png" not in filename:
+        return "Error: Invalid file extension. Please use PNG files only."
 
-    # start commands to reset the canvas and remove the script
-    command = f'@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n@bypass /s r i -3329 120 -1544 Theta_the_end\n'
-    command = command + '@bypass /tellraw {{player}} ["",{"text":"Building map art from","color":"dark_green"},{"text":" §FILENAMEHERE.png ","color":"blue"},{"text":"now - build time §TIMEHERE","color":"dark_green"}]\n'
-    command = command.replace('§FILENAMEHERE', filename)
-    
+    # strips png extensions from filename if applicable
+    filename = filename.replace(".png", "")
+
     # loads RGB data from the image
     try:
-        im = Image.open(f"{filename}.png")
-        pix = im.load()
-    except FileNotFoundError:
-        print(f'Unable to find {filename}.png - make sure it is in the same directory as this program.')
-        return
+        im: Image = Image.open(f"{filename}.png")
+        im: Image = im.resize((128, 128), resample=Image.NEAREST)
+        pix: PyAccess = im.load()
+        
+    except FileNotFoundError: return f"Error: Unable to find {filename}.png - make sure it is in the same directory as this program."
+
+    # strips filename to what should be displayed (ie. without path)
+    filename = filename.split("/")[-1]
+
+    # start commands to reset the canvas and tell you you're done
+    command: str = f'@fast\n@bypass /fill {startX} {startY-1} {startZ} {startX+127} {startY} {startZ+127} {baseBlock}\n' + \
+        '@bypass /tellraw {{player}} ["",{"text":"Successfully built map art from ","color":"dark_green"},{"text":"' + filename + \
+            '.png","color":"blue"},{"text":"!","color":"dark_green"}]\n'
     
-    # iterates through each pixel of the image in natural order (L-R, T-B)
+
+    # iterates through each pixel of the image in natural order (L-R := z, T-B := x)
     for zl in range(128):
 
-        # list of commands at this current "line" (one layer on the Z-axis)
-        cline = []
-        clinetext = ''
+        # list of commands at this current "line" (one slice on the Z-axis)
+        clinetext: str = ""
 
-        # each x-ordinate within this region
-        for xl in range(128):
+        # gets the block which most closely matches the pixel's colour, provided as an RGB tuple.
+        # converts the RGB to CIE-L*ab, gets the distance to all the colours we have access to, finds the block
+        # colour which minimises this value, then adds this block to the list of blocks in the line.
+        # does this process for each x-ordinate within this slice, ie. each block.
+        # however, if the transparency of any pixel is < 100, make it glass (transparent)
+        cline: list[str] = [
+            blocks[distance.cdist([convert_to_CIELAB(pix[xl, zl][:3])], np.array(list(colours.values()))).argmin()]
+            if pix[xl, zl][3] >= 100 else "glass"
+            for xl in range(128)
+            ]
 
-            # gets the block which most closely matches the pixel's colour
-            try:
-                match = closestMatch(pix[xl,zl][:3])[0]
-            except IndexError:
-                print('Image too small - your image file must be exactly 128x128 pixels in size,')
-
-            # add the block to make the colour right to the list
-            cline.append(match)
-
-        # wrote this a little while ago without commenting it and don't
-        # know exactly how it works any more, but it gets the job done
-        cline.append('null')
-        currentStreak = -1
+        # adds a dummy element at the end, so we can iterate through up to this point.
+        # currentStreak gives the number of identical blocks in a row (starting from x = originalX); lastBlock is this block type
+        cline.append("null")
+        currentStreak: int = -1
+        originalX: int = startX
         lastBlock = cline[0]
-        originalX = startX
 
         # handles the distinction between /setblock and /fill
         for block in cline:
 
-            # if the same block appears as before, expand the streak for /fill
+            # if the same block appears as before, expand the "streak" for /fill to use by one
             if block == lastBlock:
                 currentStreak += 1
+                continue
 
-            # otherwise, add an additional command
-            else:
+            # otherwise, we're done with that series of blocks, so need to add our fill or setblock command to the list
+            # small optimisation: don't bother adding superfluous commands to place down the background colour, as it exists already
+            if lastBlock != baseBlock:
 
-                # small optimisation: doesn't bother adding superfluous commands
-                # to place down white concrete, as the background exists already
-                if lastBlock != baseBlock:
+                # /setblock vs /fill - set just that block if there's one, or multiple with /fill if needed 
+                if currentStreak == 0:
+                    clinetext += f"@bypass /setblock {originalX} {startY} {startZ+zl} {lastBlock}\n"
+                else:
+                    clinetext += f"@bypass /fill {originalX} {startY} {startZ+zl} {originalX+currentStreak} {startY} {startZ+zl} {lastBlock}\n"
 
-                    # /setblock vs /fill
-                    if currentStreak == 0:
-                        clinetext += f'@bypass /setblock {originalX} {startY} {startZ+zl} {lastBlock}\n'
-                    else:
-                        clinetext += f'@bypass /fill {originalX} {startY} {startZ+zl} {originalX+currentStreak} {startY} {startZ+zl} {lastBlock}\n'
-                    
-                # resets for the next streak
-                originalX = originalX + currentStreak + 1
-                currentStreak = 0
-                lastBlock = block
+            # resets all our tracking data for the next streak
+            originalX = originalX + currentStreak + 1
+            currentStreak = 0
+            lastBlock = block
 
-        # adds the last command of the line
+        # adds this z-slice's commands to the overall script. note that the last command of the slice would not be included
+        # if we had not added our dummy element earlier on.
         command = command + clinetext
-    
-    '''
-    # write the command text to a text file named after the image
-    with open(f'{filename}.txt', 'w+') as f:
-        f.write(command)
-    '''
 
-    # time calculation based on 20tps: each new line is a new command, which takes 1 tick each
-    time_seconds = (command.count('\n') // 20 + 1)
-    time_minutes = time_seconds // 60
-    time_seconds = str(time_seconds % 60).zfill(2)
-    
-    # insert time in correct place
-    command = command.replace('§TIMEHERE', f"{time_minutes}:{time_seconds}")
-    
+    # transparency checking and handling
+    if "glass" in command:
+         command = command + "\n".join(('\n@bypass /tellraw {{player}} ["",{"text":Hold still, this will only take a second...","color":"dark_green"}',
+                                        "@bypass /teleport {{player}} -3200.5 142.0 -1532.5 180 20",
+                                        "@bypass /clone -3392 139 -1600 -3265 139 -1473 -3264 139 -1600",
+                                        "@bypass /clone -3392 140 -1600 -3265 140 -1473 -3264 140 -1600",
+                                        "@bypass /item replace entity {{player}} weapon.mainhand with minecraft:filled_map{map:12372}",
+                                        "@delay 20\n@bypass /teleport {{player}} -3328.5 119.0 -1532.5 180 20"))
+
     # posts to paste.minr.org
     try:
-        req = post('https://paste.minr.org/documents', data=command)
-        key = json.loads(req.content)["key"]
+        req: Response = post("https://paste.minr.org/documents", data=command)
+        key: str = json.loads(req.content)["key"]
+        return f"/func execute akmap::add(\"{key}\", \"YOUR_UUID_GOES_HERE\", \"{filename}\")"
 
-        # opens website and displays success message
-        openSite(f'https://paste.minr.org/{key}')
-        print(f"Successfully uploaded script! To use it, ask an admin to run the command:\n/s i i -3329 120 -1544 Theta_the_end {key}\n")
-    
-    # KeyError: 'key' if script is too long
-    except KeyError:
-        print("Script is too long for hastebin to handle. Please try again with a less detailed image.")
+    # we get <KeyError: 'key'> if the script is too long
+    except KeyError: return "Error: Script is too long for hastebin to handle. Please try again with a less detailed image."
+
 
 # easy, convenient main loop
-if __name__ == '__main__':
-    while True:
-        createCommand(input('Enter your image filename here -> '))
+while __name__ == "__main__":
+    print(createCommand(input("Enter your image filename here -> ")))
