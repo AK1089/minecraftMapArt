@@ -18,7 +18,7 @@ Installation
 ------------
 Download file as ZIP, extract and run **mapmaker.py**.
 
-Make sure the image file you want to convert into a map is in the same directory as the program. You may have to specify a complete file path.
+Make sure the image file you want to convert into a map is in the same directory as the program. You may have to specify a complete file path when inputting an image.
 
 
 createCommand(filename, baseBlock='glass')
@@ -46,3 +46,8 @@ You can also simply run the file, and instead of manually calling the function i
 ```python
 Enter your image filename here ->  # type an image filename here and press return
 ```
+
+
+Feedback
+--------
+If you encounter any issues while using this program, either while running this code or in-game, please message me on Discord or file an issue here. Also, feel free to suggest improvements, or create a pull request!
