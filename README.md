@@ -7,22 +7,25 @@ A program to generate scripts in Minr Script Code which automatically builds map
 Requirements
 ------------
 
-- [Python 3.7+](https://www.python.org/downloads/)
+- [Python 3.10+](https://www.python.org/downloads/)
 - [PIL / Pillow](https://pypi.org/project/Pillow/)
+- [NumPy](https://pypi.org/project/numpy/)
+- [SciPy](https://pypi.org/project/scipy/)
+- [requests](https://pypi.org/project/requests/)
 
 
 Installation
 ------------
 Download file as ZIP, extract and run **mapmaker.py**.
 
-Make sure the image file you want to convert into a map is in the same directory as the program.
+Make sure the image file you want to convert into a map is in the same directory as the program. You may have to specify a complete file path.
 
 
-createCommand(filename, baseBlock='white_concrete')
+createCommand(filename, baseBlock='glass')
 ---------------------------------------------------
-Takes the name of an image file in PNG form as input. File must be 128x128 pixels in size. If you know the primary background block of your map art, specify it as an OPTIONAL second argument, and your script will run slightly faster. For most cases, adding this is entirely unnecessary.
+Takes the name of an image file in PNG form as input. File should ideally be 128x128 pixels in size - if not, it will be scaled down to this size. If you know the primary background block of your map art, specify it as an OPTIONAL second argument, and your script will be slightly more optimised. _For most cases, adding this is entirely unnecessary._
 
-Your script will be uploaded to paste.minr.org and opened in a browser for you.
+Your script will be uploaded to paste.minr.org, and a function will be generated for you. This function should be sent to the admins to run.
 
 
 Example Usage - Module
@@ -32,7 +35,7 @@ Example Usage - Module
 createCommand('cat.png')
 createCommand('map_logo')
 createCommand('blue_ocean')
-createCommand('blue_ocean', 'blue_wool') # script is shorter and runs faster
+createCommand('blue_ocean', 'blue_wool') # script is shorter and less laggy
 ```
 
 
