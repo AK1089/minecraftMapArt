@@ -134,7 +134,7 @@ def createCommand(filename: str, baseBlock: str = "glass"):
     # loads RGB data from the image
     try:
         im: Image = Image.open(f"{filename}.png")
-        im: Image = im.resize((128, 128), resample=Image.NEAREST)
+        im: Image = im.resize((128, 128), resample=Image.Resampling.NEAREST)
         pix: PyAccess = im.load()
         
     except FileNotFoundError: return f"Error: Unable to find {filename}.png - make sure it is in the same directory as this program."
@@ -161,7 +161,7 @@ def createCommand(filename: str, baseBlock: str = "glass"):
         # however, if the transparency of any pixel is < 100, make it glass (transparent)
         cline: list[str] = [
             blocks[distance.cdist([convert_to_CIELAB(pix[xl, zl][:3])], np.array(list(colours.values()))).argmin()]
-            if pix[xl, zl][3] >= 100 else "glass"
+            if (len(pix) == 3 or pix[xl, zl][3]) >= 100 else "glass"
             for xl in range(128)
             ]
 
