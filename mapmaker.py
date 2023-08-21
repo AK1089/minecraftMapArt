@@ -95,7 +95,7 @@ def convert_to_CIELAB(rgb: tuple) -> np.array:
     
     # we're converting through XYZ colour space, so this is our halfway point.
     # normalises the RGB values, respaces that, and uses the first matrix to give us XYZ.
-    # then, divide it by the other normalisation values (D65 illuminant, 2° observer)
+    # then, divide it by the other normalisation values (D65 illuminant, 2Â° observer)
     # to get the right values in XYZ space.
     XYZ: np.array = np.divide(np.matmul(M_1, respace_to_XYZ(np.array(rgb) / 255)),
                               np.array((95.047, 100.000, 108.883)))
@@ -161,7 +161,7 @@ def createCommand(filename: str, baseBlock: str = "glass"):
         # however, if the transparency of any pixel is < 100, make it glass (transparent)
         cline: list[str] = [
             blocks[distance.cdist([convert_to_CIELAB(pix[xl, zl][:3])], np.array(list(colours.values()))).argmin()]
-            if (len(pix[xl, zl]) == 3 or pix[xl, zl][3]) >= 100 else "glass"
+            if (len(pix[xl, zl]) == 3 or pix[xl, zl][3] >= 100) else "glass"
             for xl in range(128)
             ]
 
