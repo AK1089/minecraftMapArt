@@ -161,7 +161,7 @@ def createCommand(filename: str, baseBlock: str = "glass"):
         # however, if the transparency of any pixel is < 100, make it glass (transparent)
         cline: list[str] = [
             blocks[distance.cdist([convert_to_CIELAB(pix[xl, zl][:3])], np.array(list(colours.values()))).argmin()]
-            if (len(pix) == 3 or pix[xl, zl][3]) >= 100 else "glass"
+            if (len(pix[xl, zl]) == 3 or pix[xl, zl][3]) >= 100 else "glass"
             for xl in range(128)
             ]
 
