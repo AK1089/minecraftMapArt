@@ -3,7 +3,7 @@ Minr Script Minecraft Map Art Maker
 
 A set of programs to generate scripts in Minr Script Code which automatically builds map art in Minecraft from a reference PNG.
 
-The [web version](https://google.com) of this tool is highly recommended unless you have a specialist use case.
+The [web version](https://minr-map-art-814d7355b513.herokuapp.com/) of this tool is highly recommended unless you have a specialist use case.
 
 ## Web Version Usage
 
@@ -33,7 +33,7 @@ The [web version](https://google.com) of this tool is highly recommended unless 
 
 ## Installation
 
-Run either `mapmaker.py` or `mapmaker.js` as usual with Python or NPM. Alternatively, use the [web version](https://google.com) (recommended).
+Run either `mapmaker.py` or `mapmaker.js` as usual with Python or NPM. Alternatively, use the [web version](https://minr-map-art-814d7355b513.herokuapp.com/) (recommended).
 
 
 ## createCommand(filename, baseBlock='glass')
