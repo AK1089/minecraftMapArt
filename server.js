@@ -6,7 +6,7 @@ const axios = require('axios');
 // makes an app using CORS
 const app = express();
 app.use(cors());
-app.use(express.json({}));
+app.use(express.json({ limit: '800kb' }));
 app.use(express.static('public'));
 
 // the process-text endpoint to upload to paste.minr.org
