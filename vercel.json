@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/process-text",
       "dest": "server.js"
     },
     {
