@@ -1,0 +1,25 @@
+{
+  "name": "minecraftmapart",
+  "version": "1.0.0",
+  "description": "Generate scripts in Minr Script Code which automatically build map art in Minecraft.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AK1089/minecraftMapArt.git"
+  },
+  "author": "Avish Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AK1089/minecraftMapArt/issues"
+  },
+  "homepage": "https://github.com/AK1089/minecraftMapArt#readme",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
