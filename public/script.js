@@ -284,7 +284,7 @@ async function processImage() {
             ctx.drawImage(image, 0, 0, 128, 128);
             const imageData = ctx.getImageData(0, 0, 128, 128);
             const pixels = Array.from(imageData.data);
-            const filename = file.name;
+            let filename = file.name;
             const channels = pixels.length / 16384
 
             // trim the filename to format it correctly 
