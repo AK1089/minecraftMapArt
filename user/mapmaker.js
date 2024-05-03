@@ -257,6 +257,15 @@ async function createCommand(filename, baseBlock = 'glass') {
         try {
             const response = await axios.post('https://paste.minr.org/documents', command);
             const key = response.data.key;
+
+            // trim the filename to format it correctly 
+            filename = filename.split('/').pop().split('.')[0];
+            filename = filename.replace(/[^a-zA-Z0-9_]/g, '');
+            filename = filename.slice(0, 12);
+            if (filename === "") {
+                filename = "unknown_img";
+            }
+            
             return `@var akmap::add("${key}", "YOUR_UUID_HERE", "${filename}")`;
         } catch (error) {
             return 'Error: Script is too long for hastebin to handle. Please try again with a less detailed image.';

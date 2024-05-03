@@ -287,6 +287,14 @@ async function processImage() {
             const filename = file.name;
             const channels = pixels.length / 16384
 
+            // trim the filename to format it correctly 
+            filename = filename.split('/').pop().split('.')[0];
+            filename = filename.replace(/[^a-zA-Z0-9_]/g, '');
+            filename = filename.slice(0, 12);
+            if (filename === "") {
+                filename = "unknown_img";
+            }
+
             // make a script out of it
             const {
                 command,
